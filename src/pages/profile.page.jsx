@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import AnimationWrapper from "../common/page-animation";
 import Loader from "../components/loader.component";
 
-export const profileDataStructure = {
+const profileDataStructure = {
   personal_info: {
     fullname: "",
     username: "",
@@ -13,57 +13,41 @@ export const profileDataStructure = {
   },
   account_info: {
     total_posts: 0,
-    total_blogs: 0,
+    total_reads: 0,
   },
   social_links: {},
-  joinedAt: "",
+  joinedAt: " ",
 };
 
 const ProfilePage = () => {
   let { id: profileId } = useParams();
   let [profile, setProfile] = useState(profileDataStructure);
-  let [loading, setLoading] = useState(true);
-  // let {
-  //   personal_info: { fullname, username: profile_name, profile_img, bio },
-  //   account_info: { total_posts, total_blogs },
-  //   social_links,
-  //   joinedAt,
-  // } = profile;
 
-  const fetchUserProfile = () => {
-    axios
-      .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-profile", {
-        username: profileId,
-      })
-      .then(({ data }) => {
-        // console.log(profileId);
-        // console.log(user);
-        setProfile(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.log(err);
-        setLoading(false);
-      });
-  };
+  let {
+    personal_info: { fullname, username: proflie_username, profile_img, bio },
+    account_info: { total_posts, total_reads },
+    social_links,
+    joinedAt,
+  } = profile;
+
   useEffect(() => {
+    const fetchUserProfile = async () => {
+      await axios
+        .post(import.meta.env.VITE_SERVER_DOMAIN + "/get-profile", {
+          username: profileId,
+        })
+        .then(({ data: user }) => {
+          setProfile(user);
+          console.log(user);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
     fetchUserProfile();
-    // console.log(profile);
-  }, [profileId]);
+  }, []);
 
-  return (
-    <AnimationWrapper>
-      {loading ? (
-        <Loader />
-      ) : (
-        <section className="h-cover md:flex flex-row-reverse items-start gap-5 min-[1100px]:gap-12">
-          <div className="flex flex-col max-md:items-start gap-5 min-w-[250px]">
-            <img src="" alt="" />
-          </div>
-        </section>
-      )}
-    </AnimationWrapper>
-  );
+  return <>{profileId}</>;
 };
 
 export default ProfilePage;
